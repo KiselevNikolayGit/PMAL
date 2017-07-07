@@ -1,4 +1,32 @@
--- ORIGINALS --
+-- IMPORTANT FUNCTION --
+function rgbhex(hex)
+	hex = hex:gsub("#","")
+	return tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6))
+end
+
+-- ADD TO WORLD --
+function love.PMALphysic(pmal, world, x, y, BodyType)
+  object = {}
+  object.b = love.physics.newBody(world, x, y, BodyType)
+  object.s = love.physics.newPolygonShape(pmal.p)
+  object.f = love.physics.newFixture(object.b, object.s)
+  object.pmal = pmal
+  return object
+end
+
+-- DRAW --
+function love.PMALdraw(object)
+  if object.pmal.t == "simple" then
+    love.graphics.setColor(rgbhex(object.pmal.c))
+    love.graphics.polygon(object.pmal.s, object.b:getWorldPoints(object.s:getPoints()))
+  elseif object.pmal.t == "image" then
+    scalewi = object.pmal.w / object.pmal.i:getWidth()
+    scalehe = object.pmal.h / object.pmal.i:getHeight()
+    love.graphics.draw(object.pmal.i, object.b:getX(), object.b:getY(), object.b:getAngle(), scalewi, scalehe, object.pmal.ox, object.pmal.oy)
+  end
+end
+
+-- READ --
 function love.PMALopen(filename)
   container = love.filesystem.load(filename)
   pmal = {container()}
